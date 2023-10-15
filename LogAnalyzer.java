@@ -1,8 +1,10 @@
+
+ 
 /**
  * Read web server data and analyse hourly access patterns.
  * 
- * @author David J. Barnes and Michael Kölling.
- * @version    2016.02.29
+ * @author Arif Reyhan.
+ * @version 10/15/2023
  */
 public class LogAnalyzer
 {
@@ -10,18 +12,61 @@ public class LogAnalyzer
     private int[] hourCounts;
     // Use a LogfileReader to access the data.
     private LogfileReader reader;
-
+    private LogfileReader logfileReader;
     /**
      * Create an object to analyze hourly web accesses.
      */
+     public int busiestHour() {
+        int maxCount = 0;
+        int busiestHour = -1;
+
+        for (int hour = 0; hour < hourCounts.length; hour++) {
+            if (hourCounts[hour] > maxCount) {
+                maxCount = hourCounts[hour];
+                busiestHour = hour;
+            }
+        }
+
+        return busiestHour;
+    }
+     public int quietestHour() {
+        int minCount = Integer.MAX_VALUE;  // Initialize to a very large value
+        int quietestHour = -1;  // Initialize to an invalid hour
+
+        for (int hour = 0; hour < hourCounts.length; hour++) {
+            if (hourCounts[hour] < minCount) {
+                minCount = hourCounts[hour];
+                quietestHour = hour;
+            }
+        }
+
+        return quietestHour;
+    }
+     public int busiestTwoHour() {
+        int maxCount = 0;
+        int busiestStartHour = -1;
+
+        for (int startHour = 0; startHour < 24; startHour++) {
+            // Calculate the total count for the current two-hour window
+            int totalCount = hourCounts[startHour] + hourCounts[(startHour + 1) % 24];
+            
+            // Check if this is the new busiest two-hour window
+            if (totalCount > maxCount) {
+                maxCount = totalCount;
+                busiestStartHour = startHour;
+            }
+        }
+
+        return busiestStartHour;
+    }
     public LogAnalyzer()
-    { 
+    {  
         // Create the array object to hold the hourly
         // access counts.
         hourCounts = new int[24];
         // Create the reader to obtain the data.
-        reader = new LogfileReader("demo.log");
     }
+  
 
     /**
      * Analyze the hourly access data from the log file.
